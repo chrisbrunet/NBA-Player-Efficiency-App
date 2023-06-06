@@ -63,6 +63,27 @@ def main():
     # error handling on imvalid input
     # headers used to separate input and output
     # an exported Excel sheet shows the entire indexed dataset and a plot is shown that correctly depicts an aspect of the data
+    print("\n\n********* NBA Player Efficiency App *********")
+    print("This program calculates NBA players energy efficiency using player size, tracking, and scoring data.")
+    print("To use the program enter a player name in any case when prompted then enter either 2022 or 2023 for the year.")
+    print("The program will then output player energy efficiency statistics for the selected year.")
+    
+    while True:
+        if input("type \"exit\" to exit or return to continue: ") == "exit":
+            break
+        
+        print("************ INPUT *******************")
+        player = input("Enter a players name: ").capitalize()
+        year = input("Enter a year: ")
+
+        try:
+            # do stuff with data
+            # will likely throw a KeyError if player or year or invalid
+            pass
+        except KeyError:
+            print("Player name or year is invalid. Enter a valid player name and a year of 2022 or 2023")
+
+        print("************ OUTPUT *******************")
 
 if __name__ == '__main__':
     main()
