@@ -64,5 +64,5 @@ def main():
     # headers used to separate input and output
     # an exported Excel sheet shows the entire indexed dataset and a plot is shown that correctly depicts an aspect of the data
 
-if __name__ == 'main':
+if __name__ == '__main__':
     main()
