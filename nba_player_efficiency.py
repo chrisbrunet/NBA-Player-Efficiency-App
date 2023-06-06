@@ -13,6 +13,7 @@
     # proper spacing and naming conventions throughout
 
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 
 def import_data():
@@ -100,7 +101,12 @@ def main():
     useful_data['AVG ENERGY'] = energy_per_game(useful_data['DIST. FEET'].values, useful_data['WEIGHT'].values)
     useful_data['AVG POWER'] = power_per_game(useful_data['AVG ENERGY'].values, useful_data['MIN'].values)
     useful_data['PWR PER PT'] = useful_data['AVG POWER']/useful_data['PTS']
-    # SEAN drop nans and infs 
+
+    # replace inf values with nan
+    useful_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+    # drop players with nan values because they don't have any points
+    # so they don't matter!
+    useful_data.dropna(inplace=True)
 
     print(useful_data)
     print(useful_data.describe())
