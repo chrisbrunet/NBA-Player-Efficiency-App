@@ -13,6 +13,7 @@
     # proper spacing and naming conventions throughout
 
 import pandas as pd
+import matplotlib.pyplot as plt
 
 def import_data():
     """Import data from the data folder in this directory.
@@ -84,6 +85,12 @@ def main():
             print("Player name or year is invalid. Enter a valid player name and a year of 2022 or 2023")
 
         print("************ OUTPUT *******************")
+
+    # after exiting loop do plot and export to excel sheet
+    # plot
+
+    # save data as excel file
+    # useful_data.to_excel('indexed_dataset.xlsx')
 
 if __name__ == '__main__':
     main()
