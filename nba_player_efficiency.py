@@ -115,10 +115,11 @@ def print_player_power_rankings(player, year, useful_data):
         str: year to output data for
         pd.DataFrame: DataFrame to be indexed for printing
     """
+    # count number of players with less power per point using a mask
     ranking = useful_data[
         useful_data["PWR PER PT"] < useful_data.loc[int(year), player,:]["PWR PER PT"][0]
         ].count()[0]
-    print(f"{player} ranks number {ranking} in the NBA in terms of least power needed per point scored.")
+    print(f"{player} ranks number {ranking+1} in the NBA in terms of least power needed per point scored.")
 
 def main():
     # import and merge data
@@ -133,7 +134,7 @@ def main():
         # program solution uses the describe method to print aggregate stats for the entire dataset
         # DONE - at least 2 columns are added to dataset
         # an aggregation computation is used for a subset of data (perhaps team efficiency?)
-        # masking operation is used
+        # DONE - masking operation is used
         # groupby operation is used
         # pivot table is used
         # includes at least 2 user defined functions
