@@ -13,6 +13,7 @@
     # proper spacing and naming conventions throughout
 
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 
 def import_data():
@@ -46,10 +47,10 @@ def energy_per_game(weight, dist):
 
     Parameters:
         int: weight of player in lbs.
-        double: average distance travelled by player per game in feet.
+        float: average distance travelled by player per game in feet.
 
     Returns:
-        double: average energy output of player per game in joules
+        float: average energy output of player per game in joules
     """
     # constant variables
     coef_of_frict = 0.8
@@ -67,11 +68,11 @@ def power_per_game(energy, mins):
     """Calculates the power output of a player per game based on their energy output and play time
 
     Parameters:
-        double: average energy output of player per game in joules
-        double: average playing time per game in minutes
+        float: average energy output of player per game in joules
+        float: average playing time per game in minutes
 
     Returns:
-        double: average power output of player per game in watts
+        float: average power output of player per game in watts
     """
     # constant variables
     mins_to_sec = 60
@@ -79,6 +80,46 @@ def power_per_game(energy, mins):
     # power calculation
     power = energy / (mins * mins_to_sec)
     return power
+
+def print_player_conv_stats(player, year, useful_data):
+    """Prints the conventional stats of player.
+    
+    Parameters:
+        str: player that is to be highlighted
+        str: year to output data for
+        pd.DataFrame: DataFrame to be indexed for printing
+    """
+    player_df = useful_data.loc[int(year), player, :]
+    print(f"Games Played: {player_df['GP'].values[0]}, Points: {player_df['PTS'].values[0]},", end=" ")
+    print(f"Field Goal Attempts: {player_df['FGA'].values[0]}, Wins: {player_df['W'].values[0]}")
+
+def print_player_power_stats(player, year, useful_data):
+    """Prints the power and energy stats for player.
+    
+    Parameters:
+        str: player that is to be highlighted
+        str: year to output data for
+        pd.DataFrame: DataFrame to be indexed for printing
+    """
+    player_df = useful_data.loc[int(year), player, :]
+    print(f"Average Energy (J): {player_df['AVG ENERGY'].values[0]},", end=" ")
+    print(f"Average Power (W): {player_df['AVG POWER'].values[0]},", end=" ")
+    print(f"Average Power Per Point (W/pt): {player_df['PWR PER PT'].values[0]}")
+
+def print_player_power_rankings(player, year, useful_data):
+    """Prints the ranking of the player in terms of the least
+        power needed to score a point.
+    
+    Parameters:
+        str: player that is to be highlighted
+        str: year to output data for
+        pd.DataFrame: DataFrame to be indexed for printing
+    """
+    # count number of players with less power per point using a mask
+    ranking = useful_data[
+        useful_data["PWR PER PT"] < useful_data.loc[int(year), player,:]["PWR PER PT"][0]
+        ].count()[0]
+    print(f"{player} ranks number {ranking+1} in the NBA in terms of least power needed per point scored.")
 
 def main():
     # import and merge data
@@ -93,14 +134,19 @@ def main():
         # program solution uses the describe method to print aggregate stats for the entire dataset
         # DONE - at least 2 columns are added to dataset
         # an aggregation computation is used for a subset of data (perhaps team efficiency?)
-        # masking operation is used
+        # DONE - masking operation is used
         # groupby operation is used
         # pivot table is used
         # includes at least 2 user defined functions
     useful_data['AVG ENERGY'] = energy_per_game(useful_data['DIST. FEET'].values, useful_data['WEIGHT'].values)
     useful_data['AVG POWER'] = power_per_game(useful_data['AVG ENERGY'].values, useful_data['MIN'].values)
     useful_data['PWR PER PT'] = useful_data['AVG POWER']/useful_data['PTS']
-    # SEAN drop nans and infs 
+
+    # replace inf values with nan
+    useful_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+    # drop players with nan values because they don't have any points
+    # so they don't matter!
+    useful_data.dropna(inplace=True)
 
     print(useful_data)
     print(useful_data.describe())
@@ -116,28 +162,30 @@ def main():
     print("The program will then output player energy efficiency statistics for the selected year.")
     
     while True:
-        if input("type \"exit\" to exit or return to continue: ") == "exit":
-            break
-        
-        print("************ INPUT *******************")
-        player = input("Enter a players name: ").capitalize()
+        print("\n\n************ INPUT *******************")
+        player = input("Enter a players name: ")
         year = input("Enter a year: ")
 
         try:
-            # do stuff with data
-            # will likely throw a KeyError if player or year or invalid
-            pass
+            # check if input is valid
+            useful_data.loc[int(year), player, :]
+            break
         except KeyError:
             print("Player name or year is invalid. Enter a valid player name and a year of 2022 or 2023")
+        except ValueError:
+            print("Year is invalid. Enter a year of 2022 or 2023.")
 
-        print("************ OUTPUT *******************")
+    print("\n\n************ OUTPUT *******************")
 
     # OUTPUTS
     
     # PLAYER STATS
     # conventional player stats
+    print_player_conv_stats(player, year, useful_data)
     # player energy/power stats
+    print_player_power_stats(player, year, useful_data)
     # player rankings in NBA that year
+    print_player_power_rankings(player, year, useful_data)
 
     # LEAGUE STATS
     # top 5 PPP
