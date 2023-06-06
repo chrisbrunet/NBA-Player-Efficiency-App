@@ -100,8 +100,10 @@ def main():
     useful_data['AVG ENERGY'] = energy_per_game(useful_data['DIST. FEET'].values, useful_data['WEIGHT'].values)
     useful_data['AVG POWER'] = power_per_game(useful_data['AVG ENERGY'].values, useful_data['MIN'].values)
     useful_data['PWR PER PT'] = useful_data['AVG POWER']/useful_data['PTS']
+    # SEAN drop nans and infs 
 
     print(useful_data)
+    print(useful_data.describe())
 
     # user interface and output
     # user is given clear guidance on how to enter the TWO given input values (year, player)
@@ -129,6 +131,22 @@ def main():
             print("Player name or year is invalid. Enter a valid player name and a year of 2022 or 2023")
 
         print("************ OUTPUT *******************")
+
+    # OUTPUTS
+    
+    # PLAYER STATS
+    # conventional player stats
+    # player energy/power stats
+    # player rankings in NBA that year
+
+    # LEAGUE STATS
+    # top 5 PPP
+    # botom 5 PPP
+
+    # PLOTS
+    # most efficient teams
+    # player weight vs PPP 
+
 
     # after exiting loop do plot and export to excel sheet
     # plot
