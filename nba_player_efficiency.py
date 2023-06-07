@@ -159,6 +159,7 @@ def main():
     print("The program will then output player energy efficiency statistics for the selected year.")
     
     while True:
+        # change to year first and give option to list player names by selected team. - SEAN
         print("\n\n************ INPUT *******************\n")
         player = input("Enter a players name: ")
         year = input("Enter a year: ")
@@ -179,6 +180,7 @@ def main():
     # year = 2022
     
     # PLAYER STATS
+    # make nicer. - SEAN
     print(f"\n{year} PLAYER STATS - {player}\n")
     # conventional player stats
     print_player_conv_stats(player, year, useful_data)
@@ -195,9 +197,10 @@ def main():
     print(league_averages, "\n")
 
     # Top 5 Players in Power Per Point
+    # try making this a pivot table
     print(f"Top 5 Most Efficient Players in {year} (Power Per Point):\n")
     top_5 = useful_data.loc[int(year), :].sort_values(by=['PWR PER PT'])['PWR PER PT'][:5]
-    print(top_5.to_string(index=True, header=False), "\n")
+    print(top_5.to_string(index=["PLAYER","TEAM","PWR PER PT"]), "\n")
    
     # Bottom 5 Players in Power Per Point
     print(f"Top 5 Least Efficient Players in {year} (Power Per Point):\n")
