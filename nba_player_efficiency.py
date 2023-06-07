@@ -102,9 +102,9 @@ def print_player_power_stats(player, year, useful_data):
         pd.DataFrame: DataFrame to be indexed for printing
     """
     player_df = useful_data.loc[int(year), player, :]
-    print(f"Average Energy (J): {player_df['AVG ENERGY'].values[0]},", end=" ")
-    print(f"Average Power (W): {player_df['AVG POWER'].values[0]},", end=" ")
-    print(f"Average Power Per Point (W/pt): {player_df['PWR PER PT'].values[0]}")
+    print(f"Average Energy (J): {player_df['AVG ENERGY'].values[0].round(2)},", end=" ")
+    print(f"Average Power (W): {player_df['AVG POWER'].values[0].round(2)},", end=" ")
+    print(f"Average Power Per Point (W/pt): {player_df['PWR PER PT'].values[0].round(2)}")
 
 def print_player_power_rankings(player, year, useful_data):
     """Prints the ranking of the player in terms of the least
@@ -119,7 +119,7 @@ def print_player_power_rankings(player, year, useful_data):
     ranking = useful_data[
         useful_data["PWR PER PT"] < useful_data.loc[int(year), player,:]["PWR PER PT"][0]
         ].count()[0]
-    print(f"{player} ranks number {ranking+1} in the NBA in terms of least power needed per point scored.")
+    print(f"{player} ranks number {ranking} in the NBA in terms of least power needed per point scored.")
 
 def main():
     # import and merge data
@@ -127,17 +127,17 @@ def main():
         # DONE - min 10 columns & 200 rows
         # DONE - store as multi-indexted DataFrame
         # DONE - delete all duplicated columns/rows
-        # data is sorted according to indices
+        # DONE - data is sorted according to indices
     useful_data = import_data()
 
     # data manipulation (calculating player efficiency statistics)
-        # program solution uses the describe method to print aggregate stats for the entire dataset
+        # DONE - program solution uses the describe method to print aggregate stats for the entire dataset
         # DONE - at least 2 columns are added to dataset
         # an aggregation computation is used for a subset of data (perhaps team efficiency?)
         # DONE - masking operation is used
         # groupby operation is used
         # pivot table is used
-        # includes at least 2 user defined functions
+        # DONE - includes at least 2 user defined functions
     useful_data['AVG ENERGY'] = energy_per_game(useful_data['DIST. FEET'].values, useful_data['WEIGHT'].values)
     useful_data['AVG POWER'] = power_per_game(useful_data['AVG ENERGY'].values, useful_data['MIN'].values)
     useful_data['PWR PER PT'] = useful_data['AVG POWER']/useful_data['PTS']
@@ -148,15 +148,12 @@ def main():
     # so they don't matter!
     useful_data.dropna(inplace=True)
 
-    print(useful_data)
-    print(useful_data.describe())
-
     # user interface and output
-    # user is given clear guidance on how to enter the TWO given input values (year, player)
-    # error handling on imvalid input
-    # headers used to separate input and output
-    # an exported Excel sheet shows the entire indexed dataset and a plot is shown that correctly depicts an aspect of the data
-    print("\n\n********* NBA Player Efficiency App *********")
+        # DONE - user is given clear guidance on how to enter the TWO given input values (year, player)
+        # DONE - error handling on imvalid input
+        # DONE - headers used to separate input and output
+        # an exported Excel sheet shows the entire indexed dataset and a plot is shown that correctly depicts an aspect of the data
+    print("\n\n********* NBA Player Efficiency App *********\n")
     print("This program calculates NBA players energy efficiency using player size, tracking, and scoring data.")
     print("To use the program enter a player name in any case when prompted then enter either 2022 or 2023 for the year.")
     print("The program will then output player energy efficiency statistics for the selected year.")
@@ -177,9 +174,12 @@ def main():
 
     print("\n\n************ OUTPUT *******************")
 
-    # OUTPUTS
+    # for testing...
+    # player = "Luka Doncic"
+    # year = 2022
     
     # PLAYER STATS
+    print(f"\n{year} PLAYER STATS - {player}\n")
     # conventional player stats
     print_player_conv_stats(player, year, useful_data)
     # player energy/power stats
@@ -188,16 +188,34 @@ def main():
     print_player_power_rankings(player, year, useful_data)
 
     # LEAGUE STATS
-    # top 5 PPP
-    # botom 5 PPP
+    print(f"\n{year} LEAGUE STATS\n")
+
+    # overall stats from useful_data in selected year
+    league_averages = useful_data.loc[int(year), ['WEIGHT', 'AVG SPEED', 'AVG POWER', 'PTS', 'PWR PER PT']].describe().round(2)
+    print(league_averages, "\n")
+
+    # Top 5 Players in Power Per Point
+    print(f"Top 5 Most Efficient Players in {year}:\n")
+    top_5 = useful_data.loc[int(year), :].sort_values(by=['PWR PER PT'])['PWR PER PT'][:5]
+    print(top_5.to_string(index=True, header=False), "\n")
+   
+    # Bottom 5 Players in Power Per Point
+    print(f"Top 5 Least Efficient Players in {year}:\n")
+    bottom_5 = useful_data.loc[int(year), :].sort_values(by=['PWR PER PT'], ascending=False)['PWR PER PT'][:5]
+    print(bottom_5.to_string(index=True, header=False), "\n")
+
+    # total energy output per team 
+    # WIP... needs to implement aggregation or groupby. just an idea to get us started
+    for team in useful_data.index.get_level_values(level=2).unique():
+        team_totals = useful_data.loc[:, :, team]
+        megajoules = (team_totals['AVG ENERGY'].sum() * 82 / 1000000).round(1)
+        print(f"{team} generated {megajoules} MJ this season, which could power a home for {(megajoules/3240).round(1)} months")
 
     # PLOTS
     # most efficient teams
     # player weight vs PPP 
 
-
     # after exiting loop do plot and export to excel sheet
-    # plot
 
     # save data as excel file
     # useful_data.to_excel('indexed_dataset.xlsx')
