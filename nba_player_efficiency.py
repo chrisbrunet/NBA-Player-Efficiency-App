@@ -159,7 +159,7 @@ def main():
     print("The program will then output player energy efficiency statistics for the selected year.")
     
     while True:
-        print("\n\n************ INPUT *******************")
+        print("\n\n************ INPUT *******************\n")
         player = input("Enter a players name: ")
         year = input("Enter a year: ")
 
@@ -195,21 +195,25 @@ def main():
     print(league_averages, "\n")
 
     # Top 5 Players in Power Per Point
-    print(f"Top 5 Most Efficient Players in {year}:\n")
+    print(f"Top 5 Most Efficient Players in {year} (Power Per Point):\n")
     top_5 = useful_data.loc[int(year), :].sort_values(by=['PWR PER PT'])['PWR PER PT'][:5]
     print(top_5.to_string(index=True, header=False), "\n")
    
     # Bottom 5 Players in Power Per Point
-    print(f"Top 5 Least Efficient Players in {year}:\n")
+    print(f"Top 5 Least Efficient Players in {year} (Power Per Point):\n")
     bottom_5 = useful_data.loc[int(year), :].sort_values(by=['PWR PER PT'], ascending=False)['PWR PER PT'][:5]
     print(bottom_5.to_string(index=True, header=False), "\n")
 
     # total energy output per team 
-    # WIP... needs to implement aggregation or groupby. just an idea to get us started
-    for team in useful_data.index.get_level_values(level=2).unique():
-        team_totals = useful_data.loc[:, :, team]
-        megajoules = (team_totals['AVG ENERGY'].sum() * 82 / 1000000).round(1)
-        print(f"{team} generated {megajoules} MJ this season, which could power a home for {(megajoules/3240).round(1)} months")
+    print(f"Total Energy Output (MJ) Per NBA Team in {year}:\n")
+    team_energy = (useful_data.loc[int(year), :].groupby('TEAM')['AVG ENERGY'].sum()*82/1000000).round(1)
+    print(team_energy.sort_values(ascending=False).to_string(header=False))
+
+    # # WIP... needs to implement aggregation or groupby. just an idea to get us started
+    # for team in useful_data.index.get_level_values(level=2).unique():
+    #     team_totals = useful_data.loc[:, :, team]
+    #     megajoules = (team_totals['AVG ENERGY'].sum() * 82 / 1000000).round(1)
+    #     print(f"{team} generated {megajoules} MJ this season, which could power a home for {(megajoules/3240).round(1)} months")
 
     # PLOTS
     # most efficient teams
