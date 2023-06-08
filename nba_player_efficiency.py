@@ -193,7 +193,7 @@ def main():
         # an aggregation computation is used for a subset of data (perhaps team efficiency?)
         # DONE - masking operation is used
         # DONE - groupby operation is used
-        # pivot table is used
+        # DONE - pivot table is used
         # DONE - includes at least 2 user defined functions
     useful_data['AVG ENERGY'] = energy_per_game(useful_data['DIST. FEET'].values, useful_data['WEIGHT'].values)
     useful_data['AVG POWER'] = power_per_game(useful_data['AVG ENERGY'].values, useful_data['MIN'].values)
