@@ -142,42 +142,6 @@ def print_power_output_per_team(year, useful_data):
     print(team_power.sort_values(ascending=False).to_string(header=False),"\n")
     print(f"NBA players in {year} produced enough power to run an average North-American home for {(total_NBA_energy / avg_home_pwr).round(1)} days. \n")
 
-    ##### TEST STUFF #####
-    # season_rankings = pd.read_csv("data/season_rankings.csv", index_col=[1,2])
-    # test = pd.merge(team_power, season_rankings, on='TEAM')
-
-    # #print(test)
-    # df = pd.DataFrame(test)
-    # df = df.sort_values(by='SZN POWER')
-
-    # fig, ax1 = plt.subplots()
-
-    # # Plot SZN POWER on the left y-axis
-    # ax1.plot(df.index, df['SZN POWER'], color='tab:red')
-    # ax1.set_ylabel('SZN POWER', color='tab:red')
-    # ax1.tick_params(axis='y', labelcolor='tab:red')
-
-    # # Plot RANK on the right y-axis
-    # ax2 = ax1.twinx()
-    # ax2.plot(df.index, df['RANK'], color='tab:blue')
-    # ax2.set_ylabel('RANK', color='tab:blue')
-    # ax2.tick_params(axis='y', labelcolor='tab:blue')
-
-    # # Rotate x-axis labels for better readability
-    # plt.setp(ax1.xaxis.get_majorticklabels(), rotation='vertical')
-
-    # # Set plot title and labels
-    # plt.title('SZN POWER and RANK by TEAM')
-    # plt.xlabel('TEAM')
-
-    # fig.tight_layout()
-
-    # Show the plot
-    # plt.show()
-
-    ######################
-
-
 def main():
     # import and merge data
         # DONE - year, player names and teams as indices (index by team then player name)
@@ -216,26 +180,26 @@ def main():
     print("To use the program enter a player name in any case when prompted then enter either 2022 or 2023 for the year.")
     print("The program will then output player energy efficiency statistics for the selected year.")
     
-    # while True:
-    #     # change to year first and give option to list player names by selected team. - SEAN
-    #     print("\n\n************ INPUT *******************\n")
-    #     player = input("Enter a players name: ")
-    #     year = input("Enter a year: ")
+    while True:
+        # change to year first and give option to list player names by selected team. - SEAN
+        print("\n\n************ INPUT *******************\n")
+        player = input("Enter a players name: ")
+        year = input("Enter a year: ")
 
-    #     try:
-    #         # check if input is valid
-    #         useful_data.loc[int(year), player, :]
-    #         break
-    #     except KeyError:
-    #         print("Player name or year is invalid. Enter a valid player name and a year of 2022 or 2023")
-    #     except ValueError:
-    #         print("Year is invalid. Enter a year of 2022 or 2023.")
+        try:
+            # check if input is valid
+            useful_data.loc[int(year), player, :]
+            break
+        except KeyError:
+            print("Player name or year is invalid. Enter a valid player name and a year of 2022 or 2023")
+        except ValueError:
+            print("Year is invalid. Enter a year of 2022 or 2023.")
 
     print("\n\n************ OUTPUT *******************")
 
     # for testing...
-    player = "Luka Doncic"
-    year = 2023
+    # player = "Luka Doncic"
+    # year = 2023
     
     # PLAYER STATS
     # make nicer. - SEAN
