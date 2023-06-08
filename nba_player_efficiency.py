@@ -161,10 +161,10 @@ def plot_weight_vs_ppp(useful_data, min_gp, weight_group):
     weight_vs_ppp.plot()
 
     # slicing output of most efficient weight range in order to print
-    weight_range = weight_vs_ppp.idxmin().to_string()
-    weight_range = weight_range.split(" ")
-    lower_weight = weight_range[6].removeprefix("[").removesuffix(",")
-    upper_weight = weight_range[7].removesuffix(")")
+    weight_range = weight_vs_ppp.idxmin().to_string(index=False)
+    weight_range = weight_range.split(",")
+    lower_weight = weight_range[0].removeprefix("[")
+    upper_weight = weight_range[1].removesuffix(")").strip()
         
     print(f"The optimal weight to score points in the NBA with the least amount of work is {lower_weight}-{upper_weight} lbs. \n")
     plt.show()
