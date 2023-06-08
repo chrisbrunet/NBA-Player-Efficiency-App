@@ -192,7 +192,7 @@ def main():
         # DONE - at least 2 columns are added to dataset
         # an aggregation computation is used for a subset of data (perhaps team efficiency?)
         # DONE - masking operation is used
-        # groupby operation is used
+        # DONE - groupby operation is used
         # pivot table is used
         # DONE - includes at least 2 user defined functions
     useful_data['AVG ENERGY'] = energy_per_game(useful_data['DIST. FEET'].values, useful_data['WEIGHT'].values)
@@ -271,16 +271,23 @@ def main():
     # PLOTS
     # most efficient teams
     # player weight vs PPP 
-   
-    weight_vs_ppp = useful_data.pivot_table(index=pd.cut(useful_data['WEIGHT'], bins=range(useful_data['WEIGHT'].min(), useful_data['WEIGHT'].max()+16, 15), right=False),
+
+    over_20_gp = useful_data[useful_data['GP'] > 20]
+    weight_vs_ppp = over_20_gp.pivot_table(index=pd.cut(over_20_gp['WEIGHT'], bins=range(over_20_gp['WEIGHT'].min(), over_20_gp['WEIGHT'].max()+11, 10), right=False),
                              values='PWR PER PT',
                              aggfunc='mean')
 
     # after exiting loop do plot and export to excel sheet
+    print(weight_vs_ppp, "\n")
     weight_vs_ppp.plot()
     plt.show()
 
-    print(f"The optimal weight to score points in the NBA with the least amount of work is {weight_vs_ppp.idxmin().to_string()} \n")
+    weight_range = weight_vs_ppp.idxmin().to_string()
+    weight_range = weight_range.split(" ")
+    lower_weight = weight_range[6].removeprefix("[").removesuffix(",")
+    upper_weight = weight_range[7].removesuffix(")")
+    
+    print(f"The optimal weight to score points in the NBA with the least amount of work is {lower_weight}-{upper_weight} lbs. \n")
     # save data as excel file
     # useful_data.to_excel('indexed_dataset.xlsx')
 
