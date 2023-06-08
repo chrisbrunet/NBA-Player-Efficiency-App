@@ -119,7 +119,7 @@ def print_player_power_rankings(player, year, useful_data):
     ranking = useful_data[
         useful_data["PWR PER PT"] < useful_data.loc[int(year), player,:]["PWR PER PT"][0]
         ].count()[0]
-    print(f"{player} ranks number {ranking} in the NBA in terms of least power needed per point scored.")
+    print(f"{player} ranks number {ranking+1} in the NBA in terms of least power needed per point scored.")
 
 def print_power_output_per_team(year, useful_data):
     """Prints the total power output of each NBA team as well as all NBA teams over the course of a given season
@@ -141,6 +141,33 @@ def print_power_output_per_team(year, useful_data):
     # sorting and printing output
     print(team_power.sort_values(ascending=False).to_string(header=False),"\n")
     print(f"NBA players in {year} produced enough power to run an average North-American home for {(total_NBA_energy / avg_home_pwr).round(1)} days. \n")
+
+def plot_weight_vs_ppp(useful_data, min_gp, weight_group):
+    """Plots average power per point based on defined weight classes for all years
+
+    Parameters:
+        pd.DataFrame: DataFrame to be indexed for printing
+        int: minmum number of games played to be included in data
+        int: size of slice to group weights
+    """
+    min_gp_data = useful_data[useful_data['GP'] >= min_gp] # using a mask to filter out data that does not meet min_GP
+    
+    # creating pivot table with weight groups as rows and mean of PWR PER POINT as values
+    weight_vs_ppp = min_gp_data.pivot_table(index=pd.cut(min_gp_data['WEIGHT'], bins=range(min_gp_data['WEIGHT'].min(), min_gp_data['WEIGHT'].max() + weight_group + 1, weight_group), right=False),
+                            values='PWR PER PT',
+                            aggfunc='mean')
+
+    # plotting and formatting pivot table
+    weight_vs_ppp.plot()
+
+    # slicing output of most efficient weight range in order to print
+    weight_range = weight_vs_ppp.idxmin().to_string()
+    weight_range = weight_range.split(" ")
+    lower_weight = weight_range[6].removeprefix("[").removesuffix(",")
+    upper_weight = weight_range[7].removesuffix(")")
+        
+    print(f"The optimal weight to score points in the NBA with the least amount of work is {lower_weight}-{upper_weight} lbs. \n")
+    plt.show()
 
 def main():
     # import and merge data
@@ -235,23 +262,8 @@ def main():
     # PLOTS
     # most efficient teams
     # player weight vs PPP 
+    plot_weight_vs_ppp(useful_data, 20, 10)
 
-    over_20_gp = useful_data[useful_data['GP'] > 20]
-    weight_vs_ppp = over_20_gp.pivot_table(index=pd.cut(over_20_gp['WEIGHT'], bins=range(over_20_gp['WEIGHT'].min(), over_20_gp['WEIGHT'].max()+11, 10), right=False),
-                             values='PWR PER PT',
-                             aggfunc='mean')
-
-    # after exiting loop do plot and export to excel sheet
-    print(weight_vs_ppp, "\n")
-    weight_vs_ppp.plot()
-    plt.show()
-
-    weight_range = weight_vs_ppp.idxmin().to_string()
-    weight_range = weight_range.split(" ")
-    lower_weight = weight_range[6].removeprefix("[").removesuffix(",")
-    upper_weight = weight_range[7].removesuffix(")")
-    
-    print(f"The optimal weight to score points in the NBA with the least amount of work is {lower_weight}-{upper_weight} lbs. \n")
     # save data as excel file
     # useful_data.to_excel('indexed_dataset.xlsx')
 
