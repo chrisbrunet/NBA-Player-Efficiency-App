@@ -136,11 +136,13 @@ def print_power_output_per_team(year, useful_data):
 
     # grouping player power output by team and multiplying to extend over entire NBA season
     team_power = (useful_data.loc[int(year), :].groupby('TEAM')['SZN POWER'].sum() * w_to_mw).round(2)
-    total_NBA_energy = team_power.sum() # calculating total power output of all teams
+    total_NBA_energy = team_power.sum() # calculating total power output of all teams using a sum() aggregation computation
 
     # sorting and printing output
     print(team_power.sort_values(ascending=False).to_string(header=False),"\n")
-    print(f"NBA players in {year} produced enough power to run an average North-American home for {(total_NBA_energy / avg_home_pwr).round(1)} days. \n")
+    
+    print("INSIGHTS:")
+    print(f"\t- NBA players in {year} produced enough power to run an average North-American home for {(total_NBA_energy / avg_home_pwr).round(1)} days.")
 
 def plot_weight_vs_ppp(useful_data, min_gp, weight_group):
     """Plots average power per point based on defined weight classes for all years
@@ -150,15 +152,42 @@ def plot_weight_vs_ppp(useful_data, min_gp, weight_group):
         int: minmum number of games played to be included in data
         int: size of slice to group weights
     """
-    min_gp_data = useful_data[useful_data['GP'] >= min_gp] # using a mask to filter out data that does not meet min_GP
+    years = useful_data.index.get_level_values('YEAR').unique()
+    weight_vs_ppp_tables = []
+
+    # looping through each year of available data to create separate pivot tables for each season
+    for year in years:
+        useful_data_year = useful_data.loc[year, :]
+        min_gp_data = useful_data_year[useful_data_year['GP'] >= min_gp] # using a mask to filter out data that does not meet min_GP
     
-    # creating pivot table with weight groups as rows and mean of PWR PER POINT as values
+        # creating pivot table with weight groups as rows and mean of PWR PER POINT as values
+        weight_vs_ppp = min_gp_data.pivot_table(index=pd.cut(min_gp_data['WEIGHT'], bins=range(min_gp_data['WEIGHT'].min(), min_gp_data['WEIGHT'].max() + weight_group + 1, weight_group), right=False),
+                                values='PWR PER PT',
+                                aggfunc='mean')
+        weight_vs_ppp_tables.append(weight_vs_ppp)
+
+    
+    # plotting and formatting plots for each year of data
+    fig, (ax1, ax2) = plt.subplots(2)
+
+    # creating plots
+    weight_vs_ppp_tables[0].plot(ax=ax1)
+    weight_vs_ppp_tables[1].plot(ax=ax2)
+
+    # setting axis and chart titles
+    ax1.set_xlabel('Weight Range (lbs)')
+    ax1.set_ylabel('Avg Power per Point (W/pt)')
+    ax1.set_title(f'{years[0]} Season')
+
+    ax2.set_xlabel('Weight Range (lbs)')
+    ax2.set_ylabel('Avg Power per Point (W/pt)')
+    ax2.set_title(f'{years[1]} Season')
+
+    # creating one more pivot table for all years to find overall optimal weight for efficient scoring
+    min_gp_data = useful_data[useful_data['GP'] >= min_gp]
     weight_vs_ppp = min_gp_data.pivot_table(index=pd.cut(min_gp_data['WEIGHT'], bins=range(min_gp_data['WEIGHT'].min(), min_gp_data['WEIGHT'].max() + weight_group + 1, weight_group), right=False),
                             values='PWR PER PT',
                             aggfunc='mean')
-
-    # plotting and formatting pivot table
-    weight_vs_ppp.plot()
 
     # slicing output of most efficient weight range in order to print
     weight_range = weight_vs_ppp.idxmin().to_string(index=False)
@@ -166,7 +195,9 @@ def plot_weight_vs_ppp(useful_data, min_gp, weight_group):
     lower_weight = weight_range[0].removeprefix("[")
     upper_weight = weight_range[1].removesuffix(")").strip()
         
-    print(f"The optimal weight to score points in the NBA with the least amount of work is {lower_weight}-{upper_weight} lbs. \n")
+    print(f"\t- The optimal weight to score points in the NBA with the least amount of work is {lower_weight}-{upper_weight} lbs. \n")
+    
+    plt.tight_layout()
     plt.show()
 
 def main():
@@ -181,7 +212,7 @@ def main():
     # data manipulation (calculating player efficiency statistics)
         # DONE - program solution uses the describe method to print aggregate stats for the entire dataset
         # DONE - at least 2 columns are added to dataset
-        # an aggregation computation is used for a subset of data (perhaps team efficiency?)
+        # DONE - an aggregation computation is used for a subset of data (perhaps team efficiency?)
         # DONE - masking operation is used
         # DONE - groupby operation is used
         # DONE - pivot table is used
@@ -223,30 +254,27 @@ def main():
             print("Year is invalid. Enter a year of 2022 or 2023.")
 
     print("\n\n************ OUTPUT *******************")
-
-    # for testing...
-    # player = "Luka Doncic"
-    # year = 2023
     
-    # PLAYER STATS
+    #### PLAYER STATS ####
     # make nicer. - SEAN
-    print(f"\n{year} PLAYER STATS - {player}\n")
+    print(f"\n{year} PLAYER STATS - {player}:\n")
     # conventional player stats
     print_player_conv_stats(player, year, useful_data)
+
     # player energy/power stats
     print_player_power_stats(player, year, useful_data)
+
     # player rankings in NBA that year
     print_player_power_rankings(player, year, useful_data)
 
-    # LEAGUE STATS
-    print(f"\n{year} LEAGUE STATS\n")
+    #### LEAGUE STATS ####
+    print(f"\n{year} LEAGUE STATS:\n")
 
     # overall stats from useful_data in selected year
     league_averages = useful_data.loc[int(year), ['WEIGHT', 'AVG SPEED', 'AVG POWER', 'PTS', 'PWR PER PT']].describe().round(2)
     print(league_averages, "\n")
 
     # Top 5 Players in Power Per Point
-    # try making this a pivot table
     print(f"Top 5 Most Efficient Players in {year} (Power Per Point):\n")
     top_5 = useful_data.loc[int(year), :].sort_values(by=['PWR PER PT'])['PWR PER PT'][:5]
     print(top_5.to_string(index=True, header=False), "\n")
@@ -259,9 +287,7 @@ def main():
     # total power output per team 
     print_power_output_per_team(year, useful_data)
 
-    # PLOTS
-    # most efficient teams
-    # player weight vs PPP 
+    # plotting power per point versus weight range of NBA players
     plot_weight_vs_ppp(useful_data, 20, 10)
 
     # save data as excel file
