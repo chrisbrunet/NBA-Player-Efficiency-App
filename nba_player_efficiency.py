@@ -115,7 +115,7 @@ def print_player_power_rankings(player, year, useful_data):
     # count number of players with less power per point in year using a mask
     useful_data_year = useful_data.loc[int(year), :, :]
     ranking = useful_data_year[useful_data_year["PWR PER PT"] < useful_data_year.loc(axis=0)[:, player]["PWR PER PT"][0]].count()[0]
-    print(f"{player} ranks number {ranking+1} in the NBA in terms of least power needed per point scored.")
+    print(f"{player} ranked number {ranking+1} in the NBA in terms of least power needed per point scored.")
 
 def print_power_output_per_team(year, useful_data):
     """Prints the total power output of each NBA team as well as all NBA teams over the course of a given season
@@ -200,7 +200,6 @@ def plot_weight_vs_ppp(useful_data, min_gp, weight_group):
 
 def main():
     useful_data = import_data()
-    print(useful_data)
 
     # data manipulation (calculating player efficiency statistics and adding to DataFrame)
     useful_data['AVG ENERGY'] = energy_per_game(useful_data['DIST. FEET'].values, useful_data['WEIGHT'].values)
@@ -213,11 +212,6 @@ def main():
     # drop players with nan values because they don't have any points so they don't matter for this application
     useful_data.dropna(inplace=True)
 
-    # user interface and output
-        # DONE - user is given clear guidance on how to enter the TWO given input values (year, player)
-        # DONE - error handling on imvalid input
-        # DONE - headers used to separate input and output
-        # an exported Excel sheet shows the entire indexed dataset and a plot is shown that correctly depicts an aspect of the data
     print("\n\n**************************************** NBA Player Efficiency App ****************************************\n")
     print("This program calculates NBA players energy efficiency using player size, tracking, and scoring data.")
     print("To use the program enter the year to be analyzed (only 2022 or 2023).")
