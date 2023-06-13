@@ -99,9 +99,9 @@ def print_player_power_stats(player, year, useful_data):
         useful_data (pd.DataFrame): DataFrame to be indexed for printing.
     """
     player_df = useful_data.loc[int(year), :, player]
-    print(f"Average Energy (J): \t\t{player_df['AVG ENERGY'].values[0].round(2)},")
-    print(f"Average Power (W): \t\t{player_df['AVG POWER'].values[0].round(2)},")
-    print(f"Average Power Per Point (W/pt): {player_df['PWR PER PT'].values[0].round(2)}")
+    print(f"Average Energy Per Game (J): \t{player_df['AVG ENERGY'].values[0].round(2)},")
+    print(f"Average Power Per Game (W): \t{player_df['AVG POWER'].values[0].round(2)},")
+    print(f"Average Power Per Point (W): \t{player_df['PWR PER PT'].values[0].round(2)}")
 
 def print_player_power_rankings(player, year, useful_data):
     """Prints the ranking of the player in terms of the least
