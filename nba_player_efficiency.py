@@ -3,7 +3,7 @@
 # Chris Brunet & Sean Buchanan
 #
 # A terminal based application that calculates player efficieny.
-# Efficiency is defined by player scoring per unit energy expended.
+# Efficiency is defined by player scoring per unit power expended.
 
 import pandas as pd
 import numpy as np
@@ -48,9 +48,9 @@ def energy_per_game(weight, dist):
         float: average energy output of player per game in Joules
     """
     # constant variables
-    coef_of_frict = 0.8
+    coef_of_frict = 0.6 # estimated coefficient of friction for running (https://commons.nmu.edu/cgi/viewcontent.cgi?article=1143&context=isbs)
     ag = 9.81
-    lb_to_kg = 0.453592
+    lb_to_kg = 0.453592 
     ft_to_m = 0.3048
    
     # work calculation
@@ -67,7 +67,7 @@ def power_per_game(energy, mins):
         mins (float): average playing time per game in minutes.
 
     Returns:
-        float: average power output of player per game in Watts
+        power (float): average power output of player per game in Watts
     """
     # constant variables
     mins_to_sec = 60
@@ -99,8 +99,8 @@ def print_player_power_stats(player, year, useful_data):
         useful_data (pd.DataFrame): DataFrame to be indexed for printing.
     """
     player_df = useful_data.loc[int(year), :, player]
-    print(f"Average Energy Per Game (J): \t{player_df['AVG ENERGY'].values[0].round(2)},")
-    print(f"Average Power Per Game (W): \t{player_df['AVG POWER'].values[0].round(2)},")
+    print(f"Average Energy Per Game (J): \t{player_df['AVG ENERGY'].values[0].round(2)}")
+    print(f"Average Power Per Game (W): \t{player_df['AVG POWER'].values[0].round(2)}")
     print(f"Average Power Per Point (W): \t{player_df['PWR PER PT'].values[0].round(2)}")
 
 def print_player_power_rankings(player, year, useful_data):
@@ -115,7 +115,7 @@ def print_player_power_rankings(player, year, useful_data):
     # count number of players with less power per point in year using a mask
     useful_data_year = useful_data.loc[int(year), :, :]
     ranking = useful_data_year[useful_data_year["PWR PER PT"] < useful_data_year.loc(axis=0)[:, player]["PWR PER PT"][0]].count()[0]
-    print(f"{player} ranked number {ranking+1} in the NBA in terms of least power needed per point scored.")
+    print(f"\n{player} ranked number {ranking+1} in the NBA in terms of least power needed per point scored.")
 
 def print_power_output_per_team(year, useful_data):
     """Prints the total power output of each NBA team as well as all NBA teams over the course of a given season
